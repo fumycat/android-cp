@@ -43,6 +43,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
                 float dy = y - previousY;
 
                 // reverse direction of rotation above the mid-line
+                /*
                 if (y > getHeight() / 2) {
                     dx = dx * -1 ;
                 }
@@ -51,10 +52,16 @@ public class MyGLSurfaceView extends GLSurfaceView {
                 if (x < getWidth() / 2) {
                     dy = dy * -1 ;
                 }
-
-                mRenderer.setAngle(
+                */
+                /*mRenderer.setAngle(
                         mRenderer.getAngle() +
                                 ((dx + dy) * TOUCH_SCALE_FACTOR));
+
+                 */
+                //Log.println(Log.INFO, "dx", String.valueOf(dx));
+                //Log.println(Log.INFO, "dy", String.valueOf(dy));
+                mRenderer.setmX(mRenderer.getmX() + dx * 0.005f);
+                mRenderer.setmY(mRenderer.getmY() + dy * 0.005f);
                 requestRender();
 
         }
