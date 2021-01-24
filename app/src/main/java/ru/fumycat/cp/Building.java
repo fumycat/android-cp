@@ -51,40 +51,62 @@ public class Building {
             0.5f, -0.311004243f, 0.0f  // bottom right
     };
     */
-    static float[] triangleCoords = {
-            -1.0f, -1.0f, -1.0f,
-            1.0f, -1.0f, -1.0f,
-            1.0f,  1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f,
-            -1.0f, -1.0f,  1.0f,
-            1.0f, -1.0f,  1.0f,
-            1.0f,  1.0f,  1.0f,
-            -1.0f,  1.0f,  1.0f
+    private float[] triangleCoords = {  // Vertices of the 6 faces
+            // FRONT
+            -1.0f, -1.0f,  1.0f,  // 0. left-bottom-front
+            1.0f, -1.0f,  1.0f,  // 1. right-bottom-front
+            -1.0f,  1.0f,  1.0f,  // 2. left-top-front
+            1.0f,  1.0f,  1.0f,  // 3. right-top-front
+            // BACK
+            1.0f, -1.0f, -1.0f,  // 6. right-bottom-back
+            -1.0f, -1.0f, -1.0f,  // 4. left-bottom-back
+            1.0f,  1.0f, -1.0f,  // 7. right-top-back
+            -1.0f,  1.0f, -1.0f,  // 5. left-top-back
+            // LEFT
+            -1.0f, -1.0f, -1.0f,  // 4. left-bottom-back
+            -1.0f, -1.0f,  1.0f,  // 0. left-bottom-front
+            -1.0f,  1.0f, -1.0f,  // 5. left-top-back
+            -1.0f,  1.0f,  1.0f,  // 2. left-top-front
+            // RIGHT
+            1.0f, -1.0f,  1.0f,  // 1. right-bottom-front
+            1.0f, -1.0f, -1.0f,  // 6. right-bottom-back
+            1.0f,  1.0f,  1.0f,  // 3. right-top-front
+            1.0f,  1.0f, -1.0f,  // 7. right-top-back
+            // TOP
+            -1.0f,  1.0f,  1.0f,  // 2. left-top-front
+            1.0f,  1.0f,  1.0f,  // 3. right-top-front
+            -1.0f,  1.0f, -1.0f,  // 5. left-top-back
+            1.0f,  1.0f, -1.0f,  // 7. right-top-back
+            // BOTTOM
+            -1.0f, -1.0f, -1.0f,  // 4. left-bottom-back
+            1.0f, -1.0f, -1.0f,  // 6. right-bottom-back
+            -1.0f, -1.0f,  1.0f,  // 0. left-bottom-front
+            1.0f, -1.0f,  1.0f   // 1. right-bottom-front
     };
 
     private byte[] indices = {
-            0, 4, 5, 0, 5, 1,
-            1, 5, 6, 1, 6, 2,
-            2, 6, 7, 2, 7, 3,
-            3, 7, 4, 3, 4, 0,
-            4, 7, 6, 4, 6, 5,
-            3, 0, 1, 3, 1, 2
+            0, 1, 2, 2, 1, 3,
+            4, 5, 6, 6, 5, 7,
+            8, 9, 10, 10, 9, 11,
+            12, 13, 14, 14, 13, 15,
+            16, 17, 18, 18, 17, 19,
+            20, 21, 22, 22, 21, 23,
     };
 
     // Set color with red, green, blue and alpha (opacity) values
     float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
-    /*
-    private float[] color = {
-            0.0f,  1.0f,  0.0f,  1.0f,
-            0.0f,  1.0f,  0.0f,  1.0f,
-            1.0f,  0.5f,  0.0f,  1.0f,
-            1.0f,  0.5f,  0.0f,  1.0f,
-            1.0f,  0.0f,  0.0f,  1.0f,
-            1.0f,  0.0f,  0.0f,  1.0f,
-            0.0f,  0.0f,  1.0f,  1.0f,
-            1.0f,  0.0f,  1.0f,  1.0f
+
+    private float[][] colors = {
+            {0.0f,  1.0f,  0.0f,  1.0f},
+            {0.0f,  1.0f,  0.0f,  1.0f},
+            {1.0f,  0.5f,  0.0f,  1.0f},
+            {1.0f,  0.5f,  0.0f,  1.0f},
+            {1.0f,  0.0f,  0.0f,  1.0f},
+            {1.0f,  0.0f,  0.0f,  1.0f},
+            {0.0f,  0.0f,  1.0f,  1.0f},
+            {1.0f,  0.0f,  1.0f,  1.0f}
     };
-    */
+
     private final int mProgram;
 
     private int positionHandle;
@@ -138,32 +160,31 @@ public class Building {
     }
 
     public void draw(float[] mvpMatrix) {
-        // Add program to OpenGL ES environment
         GLES20.glUseProgram(mProgram);
-
-        GLES20.glFrontFace(GLES20.GL_CW);
 
         positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         GLES20.glEnableVertexAttribArray(positionHandle);
         GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
 
-        colorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-        // GLES20.glEnableVertexAttribArray(colorHandle);
-        GLES20.glUniform4fv(colorHandle, 1, color, 0); // color
-        // GLES20.glVertexAttribPointer(colorHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, mColorBuffer);
-
         vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0);
 
-        // vWhateverHandler = GLES20.glGetUniformLocation(mProgram, "vColor");
-        // GLES20.glUniformMatrix4fv(vWhateverHandler, 1, false, mColorBuffer);
+        // Render all the faces
 
-        // GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, 36, GLES20.GL_UNSIGNED_BYTE, mIndexBuffer);
+        colorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+
+        for (int face = 0; face < 6; face++) {
+            GLES20.glUniform4fv(colorHandle, 1, colors[face], 0);
+            mIndexBuffer.position(face * 6);
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, mIndexBuffer);
+        }
+
+        // GLES20.glUniform4fv(colorHandle, 1, color, 0); // color
+
+        // GLES20.glDrawElements(GLES20.GL_TRIANGLES, 36, GLES20.GL_UNSIGNED_BYTE, mIndexBuffer);
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(positionHandle);
-        GLES20.glDisableVertexAttribArray(colorHandle);
     }
 
 }

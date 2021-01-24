@@ -39,7 +39,26 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     public volatile float mX;
     public volatile float mY;
-    public volatile float mZ = -3;
+    public volatile float mZ = -5;
+
+    public volatile float fi = .0f;
+    public volatile float tetta = .0f;
+
+    public float getFi() {
+        return fi;
+    }
+
+    public void setFi(float fi) {
+        this.fi = fi;
+    }
+
+    public float getTetta() {
+        return tetta;
+    }
+
+    public void setTetta(float tetta) {
+        this.tetta = tetta;
+    }
 
     public float getmZ() {
         return mZ;
@@ -93,7 +112,18 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         float[] scratch = new float[16];
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(viewMatrix, 0, mX, mY, mZ, 0, 0, 0f, 0f, 1.0f, 0.0f);
+        double tettaRad = Math.toRadians(tetta);
+        double fiRad = Math.toRadians(fi);
+        float decX = (float) (mZ * Math.sin(tettaRad) * Math.cos(fiRad));
+        float decY = (float) (mZ * Math.sin(tettaRad) * Math.sin(fiRad));
+        float decZ = (float) (mZ * Math.cos(tettaRad));
+
+        Matrix.setLookAtM(viewMatrix, 0,
+                decX, decY, decZ,
+                0, 0, 0f,
+                0f, 1.0f, 0.0f);
+
+        //Matrix.setLookAtM(viewMatrix, 0, 0, 0, mZ, mX, mY, 0f, 0f, 1.0f, 0.0f);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);

@@ -35,33 +35,21 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
         float x = e.getX();
         float y = e.getY();
-
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
 
                 float dx = x - previousX;
                 float dy = y - previousY;
 
-                // reverse direction of rotation above the mid-line
-                /*
-                if (y > getHeight() / 2) {
-                    dx = dx * -1 ;
-                }
+                // Log.println(Log.INFO, "dx", String.valueOf(dx));
+                // Log.println(Log.INFO, "dy", String.valueOf(dy));
 
-                // reverse direction of rotation to left of the mid-line
-                if (x < getWidth() / 2) {
-                    dy = dy * -1 ;
-                }
-                */
-                /*mRenderer.setAngle(
-                        mRenderer.getAngle() +
-                                ((dx + dy) * TOUCH_SCALE_FACTOR));
+                mRenderer.setFi((mRenderer.getFi() + dy * 0.1f) % 360f);
+                mRenderer.setTetta((mRenderer.getTetta() + dx * 0.1f) % 360f);
 
-                 */
-                //Log.println(Log.INFO, "dx", String.valueOf(dx));
-                //Log.println(Log.INFO, "dy", String.valueOf(dy));
-                mRenderer.setmX(mRenderer.getmX() + dx * 0.005f);
-                mRenderer.setmY(mRenderer.getmY() + dy * 0.005f);
+                Log.println(Log.INFO, "tetta/fi",
+                        String.valueOf(mRenderer.getTetta()) + " / " + String.valueOf(mRenderer.getFi()));
+
                 requestRender();
 
         }
@@ -69,7 +57,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
         previousX = x;
         previousY = y;
 
-        mScaleDetector.onTouchEvent(e);
+        // mScaleDetector.onTouchEvent(e);
 
         return true;
     }
