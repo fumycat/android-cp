@@ -27,11 +27,8 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        // MotionEvent reports input details from the touch screen
-        // and other input controls. In this case, you are only
-        // interested in events where the touch position changed.
 
-        // TODO номарльная камера
+        mScaleDetector.onTouchEvent(e);
 
         float x = e.getX();
         float y = e.getY();
@@ -51,13 +48,10 @@ public class MyGLSurfaceView extends GLSurfaceView {
                         String.valueOf(mRenderer.getTetta()) + " / " + String.valueOf(mRenderer.getFi()));
 
                 requestRender();
-
         }
 
         previousX = x;
         previousY = y;
-
-        // mScaleDetector.onTouchEvent(e);
 
         return true;
     }
@@ -66,13 +60,12 @@ public class MyGLSurfaceView extends GLSurfaceView {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
 
-            // TODO ограничения
             if (detector.getScaleFactor() > 1.) {
                 mRenderer.setmZ(mRenderer.getmZ() + 0.03f);
             } else {
                 mRenderer.setmZ(mRenderer.getmZ() - 0.03f);
             }
-            // Log.println(Log.INFO, "whatever", String.valueOf(mRenderer.getmZ()));
+
             requestRender();
             invalidate();
             return true;
