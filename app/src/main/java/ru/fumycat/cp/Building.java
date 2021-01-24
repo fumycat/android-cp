@@ -158,6 +158,7 @@ public class Building {
     }
 
     public void draw(float[] mvpMatrix) {
+        // GLES20.glFrontFace(GLES20.GL_CW);
         GLES20.glUseProgram(mProgram);
 
         positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");

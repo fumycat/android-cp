@@ -98,8 +98,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         // когда переворачиваем экран
         GLES20.glViewport(0, 0, width, height);
+        // GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+        GLES20.glEnable(GLES20.GL_CULL_FACE);
 
-        float ratio = 1f; // float ratio = (float) width / height;
+        float ratio = (float) width / height;
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
@@ -114,9 +116,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Set the camera position (View matrix)
         double tettaRad = Math.toRadians(tetta);
         double fiRad = Math.toRadians(fi);
-        float decX = (float) (mZ * Math.sin(tettaRad) * Math.cos(fiRad));
-        float decY = (float) (mZ * Math.sin(tettaRad) * Math.sin(fiRad));
-        float decZ = (float) (mZ * Math.cos(tettaRad));
+        float decZ = (float) (mZ * Math.sin(tettaRad) * Math.cos(fiRad));
+        float decX = (float) (mZ * Math.sin(tettaRad) * Math.sin(fiRad));
+        float decY = (float) (mZ * Math.cos(tettaRad));
 
         Matrix.setLookAtM(viewMatrix, 0,
                 decX, decY, decZ,
