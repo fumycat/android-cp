@@ -41,8 +41,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public volatile float mY;
     public volatile float mZ = -5;
 
-    public volatile float fi = .0f;
-    public volatile float tetta = .0f;
+    public volatile float fi = .01f;
+    public volatile float tetta = .01f;
 
     public float getFi() {
         return fi;
