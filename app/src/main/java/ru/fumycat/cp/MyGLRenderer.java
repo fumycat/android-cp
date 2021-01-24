@@ -99,7 +99,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // когда переворачиваем экран
         GLES20.glViewport(0, 0, width, height);
 
-        float ratio = (float) width / height;
+        float ratio = 1f; // float ratio = (float) width / height;
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
