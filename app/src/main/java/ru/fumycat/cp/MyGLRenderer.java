@@ -87,11 +87,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCarriageBack = new GLCircleCarriage(0, 0,-3.9f);
         mCarriageFront = new GLCircleCarriage(0, 0,3.9f);
         mCylinder = new GLCylinder(0, 4,0, 4f);
-        try {
-            mCuboid = new Cuboid(context);
-        } catch (IOException e) {
-            e.printStackTrace(); // никогда не будет
-        }
+        mCuboid = new Cuboid(context);
     }
 
     @Override
