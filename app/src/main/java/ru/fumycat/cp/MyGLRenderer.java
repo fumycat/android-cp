@@ -11,6 +11,8 @@ import javax.microedition.khronos.opengles.GL10;
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private Building mBuilding;
+    private GLCircleCarriage mCarriageBack, mCarriageFront;
+    private GLCylinder mCylinder;
 
     // vPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] vPMatrix = new float[16];
@@ -92,6 +94,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         mBuilding = new Building();
+        mCarriageBack = new GLCircleCarriage(0, 0,-3.9f);
+        mCarriageFront = new GLCircleCarriage(0, 0,3.9f);
+        mCylinder = new GLCylinder(0, 0,0, 4f);
     }
 
     @Override
@@ -100,6 +105,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
         // GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glEnable(GLES20.GL_CULL_FACE);
+        GLES20.glCullFace(GLES20.GL_FRONT);
 
         float ratio = (float) width / height;
 
@@ -141,6 +147,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0);
 
         // Draw triangle
-        mBuilding.draw(scratch);
+        //mBuilding.draw(scratch);
+        //mCarriageBack.draw(scratch);
+        //mCarriageFront.draw(scratch);
+        mCylinder.draw(scratch);
+
     }
 }
