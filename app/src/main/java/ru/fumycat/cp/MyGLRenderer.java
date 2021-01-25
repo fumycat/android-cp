@@ -69,7 +69,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         GLES20.glEnable(GLES20.GL_CULL_FACE);
-        // GLES20.glCullFace(GLES20.GL_FRONT);
+        GLES20.glCullFace(GLES20.GL_FRONT);
 
         // Вот это снизу должно фиксить глубину, но получается чёрный экран
         // GLES20.glEnable(GLES20.GL_DEPTH_TEST);
