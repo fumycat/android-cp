@@ -88,11 +88,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         mTextureDataHandleBrick = Utils.loadTexture(context, R.drawable.stone_wall_public_domain);
 
+        GLCircleCarriage.DrawCtrl ctrl = new GLCircleCarriage.DrawCtrl(){
+            @Override
+            public void shaders_free() {
+
+            }
+
+            @Override
+            public void shaders_init(int mProgramHandle) {
+                float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
+                GLES20.glUniform4fv(GLES20.glGetUniformLocation(mProgramHandle, "u_Color"), 1, color, 0);
+            }
+        };
+
         mBuilding = new Building();
-        mCarriageBack = new GLCircleCarriage(0, 0,-3.9f);
-        mCarriageFront = new GLCircleCarriage(0, 0,3.9f);
-        mCylinder = new GLCylinder(context, 0, 4,0, 4f);
-        mCuboid = new Cuboid(context, 3f, 0, 0, 2, 1,2);
+        mCarriageBack = new GLCircleCarriage(context, 0, 0,-3.9f, 2);
+        mCarriageFront = new GLCircleCarriage(context,0, 0,3.9f, 2, ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
+        mCylinder = new GLCylinder(context, 0, 0,0, 2,4f);
+        mCuboid = new Cuboid(context, 1.5f, 0, 0, 2, 1,2);
         mCuboidTextured = new CuboidTexturesWIP(context,
                 -3f, 0f, 0f,
                 2f, 4f, 2f,

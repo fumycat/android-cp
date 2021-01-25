@@ -12,22 +12,6 @@ import java.nio.FloatBuffer;
 import android.opengl.Matrix;
 
 public class GLCylinder {
-    /*private static final String VERTEX_SHADER =
-            "uniform mat4 u_Matrix;//The final transformation matrix\n" +
-                    "attribute vec4 a_Position;//Vertex position\n" +
-                    "varying vec4 vPosition;//The vertex position used to pass to the fragment shader\n" +
-                    "void main() {\n" +
-                    "    gl_Position = u_Matrix * vec4(a_Position.x, a_Position.y, a_Position.z, a_Position.w);\n" +
-                    "    vPosition = a_Position;\n" +
-                    "}";
-
-    private final String FRAGMENT_SHADER =
-            "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "void main() {" +
-                    "  gl_FragColor = vColor;" +
-                    "}"; */
-
     private float radius = 1.0f; // the radius of the ball
     final double angleSpan = Math.PI / 90f; // The angle at which the ball is divided into units
     private FloatBuffer mVertexBuffer;// Vertex coordinates
@@ -44,16 +28,86 @@ public class GLCylinder {
     private int muColorHandle;
     private int muMatrixHandle;
 
-    float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
-
-    public GLCylinder(Context context, float x, float y, float z, float length) {
-        initCylinderVertex(x, y, z, length);
-        createProgram(context);
+    public int getHandle(){
+        return mProgramHandle;
     }
 
-    /**
-     * Calculate the vertices of the spherical surface
-     */
+    DrawCtrl ctrl;
+
+    float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
+
+    private void createProgram(Context context, String vertex_sh, String fragment_sh) {
+        String VERTEX_SHADER, FRAGMENT_SHADER;
+
+        if (vertex_sh != null) {
+            VERTEX_SHADER = vertex_sh;
+        }
+        else {
+            VERTEX_SHADER = Utils.readStringFromResource(context, R.raw.basic_vertex);
+        }
+
+        if (fragment_sh != null) {
+            FRAGMENT_SHADER = fragment_sh;
+        }
+        else {
+            FRAGMENT_SHADER = Utils.readStringFromResource(context, R.raw.basic_fragment);
+        }
+
+        int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, VERTEX_SHADER);
+        int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, FRAGMENT_SHADER);
+
+        mProgramHandle = GLES20.glCreateProgram();
+
+        GLES20.glAttachShader(mProgramHandle, vertexShader);
+        GLES20.glAttachShader(mProgramHandle, fragmentShader);
+
+        GLES20.glLinkProgram(mProgramHandle);
+
+        if (vertex_sh == null) {
+            muMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
+            maPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Position");
+        }
+
+        if (fragment_sh == null) {
+            muColorHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Color");
+        }
+
+    }
+
+    public interface DrawCtrl{
+        void shaders_init();
+        void shaders_free();
+    }
+
+    public GLCylinder(Context context, float x, float y, float z, float radius, float length,
+                      DrawCtrl ctrl, String VERTEX_SHADER, String FRAGMENT_SHADER) {
+        this.radius = radius;
+
+        this.ctrl = ctrl;
+
+        initCylinderVertex(x, y, z, length);
+        createProgram(context, VERTEX_SHADER, FRAGMENT_SHADER);
+    }
+
+    public GLCylinder(Context context, float x, float y, float z, float radius, float length) {
+        this.radius = radius;
+
+        ctrl = new DrawCtrl(){
+            @Override
+            public void shaders_init()
+            {
+                GLES20.glUniform4fv(muColorHandle, 1, color, 0);
+            }
+            @Override
+            public void shaders_free()
+            {
+            }
+        };
+
+        initCylinderVertex(x, y, z, length);
+        createProgram(context, null, null);
+    }
+
     public void initCylinderVertex(float x, float y, float z, float length) {
         ArrayList<Float> vertex = new ArrayList<Float>();
 
@@ -142,7 +196,7 @@ public class GLCylinder {
         }
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (number of coordinate values * 4 bytes per float)
-                vertices.length * 4);
+                vertices.length * BYTES_PER_FLOAT);
         // use the device hardware's native byte order
         bb.order(ByteOrder.nativeOrder());
 
@@ -154,39 +208,17 @@ public class GLCylinder {
         mVertexBuffer.position(0);
     }
 
-    /**
-     * Create Program
-     */
-    private void createProgram(Context context) {
-        String VERTEX_SHADER = Utils.readStringFromResource(context, R.raw.basic_vertex);
-        String FRAGMENT_SHADER = Utils.readStringFromResource(context, R.raw.basic_fragment);
-
-        int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, VERTEX_SHADER);
-        int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, FRAGMENT_SHADER);
-
-        mProgramHandle = GLES20.glCreateProgram();
-
-        GLES20.glAttachShader(mProgramHandle, vertexShader);
-        GLES20.glAttachShader(mProgramHandle, fragmentShader);
-
-        GLES20.glLinkProgram(mProgramHandle);
-
-        maPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Position");
-        muMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
-        muColorHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Color");
-    }
-
-    /**
-     * Draw a sphere
-     */
     public void draw(float[] mvpMatrix) {
         GLES20.glUseProgram(mProgramHandle);
         GLES20.glVertexAttribPointer(maPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false, 0, mVertexBuffer);
         GLES20.glEnableVertexAttribArray(maPositionHandle);
         GLES20.glUniformMatrix4fv(muMatrixHandle, 1, false, mvpMatrix, 0);
-        GLES20.glUniform4fv(muColorHandle, 1, color, 0);
+        ctrl.shaders_init();
+
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, mVertexCount);
+
+        ctrl.shaders_free();
         GLES20.glDisableVertexAttribArray(maPositionHandle);
         GLES20.glUseProgram(0);
     }

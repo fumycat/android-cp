@@ -1,5 +1,6 @@
 package ru.fumycat.cp;
 
+import android.content.Context;
 import android.opengl.GLES20;
 
 import java.util.ArrayList;
@@ -11,46 +12,6 @@ import java.nio.FloatBuffer;
 import android.opengl.Matrix;
 
 public class GLCircleCarriage {
-
-    private static final String VERTEX_SHADER =
-            "uniform mat4 u_Matrix;//The final transformation matrix\n" +
-                    "attribute vec4 a_Position;//Vertex position\n" +
-                    "varying vec4 vPosition;//The vertex position used to pass to the fragment shader\n" +
-                    "void main() {\n" +
-                    "    \n" +
-                    "    gl_Position = u_Matrix * vec4(a_Position.x, a_Position.y, a_Position.z*0.5, a_Position.w);\n" +
-                    "    vPosition = a_Position;\n" +
-                    "}";
-
-    private static final String FRAGMENT_SHADER =
-            "precision mediump float;\n" +
-                    "varying vec4 vPosition;\n" +
-                    "void main() {\n" +
-                    "float uR = 0.6;//The radius of the ball\n" +
-                    "    vec4 color;\n" +
-                    "float n = 8.0;//divided into n layers, n columns and n rows\n" +
-                    "float span = 2.0*uR/n;//square length\n" +
-                    "//Calculate the number of ranks\n" +
-                    "int i = int((vPosition.x + uR)/span);//number of rows\n" +
-                    "int j = int((vPosition.y + uR)/span);//number of layers\n" +
-                    "int k = int((vPosition.z + uR)/span);//Number of columns\n" +
-                    "    int colorType = int(mod(float(i+j+k),2.0));\n" +
-                    "if(colorType == 1) {//green when odd number\n" +
-                    "        color = vec4(0.2,1.0,0.129,0);\n" +
-                    "} else {//White when even number\n" +
-                    "color = vec4(1.0,1.0,1.0,0);//white\n" +
-                    "    }\n" +
-                    "// Give the calculated color to this piece\n" +
-                    "    gl_FragColor = color;\n" +
-                    "}";
-
-    /*private final String FRAGMENT_SHADER =
-            "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "void main() {" +
-                    "  gl_FragColor = vColor;" +
-                    "}";*/
-
     private float radius = 1.0f; // the radius of the ball
     final double angleSpan = Math.PI / 90f; // The angle at which the ball is divided into units
     private FloatBuffer mVertexBuffer;// Vertex coordinates
@@ -67,16 +28,42 @@ public class GLCircleCarriage {
     private int muColorHandle;
     private int muMatrixHandle;
 
+    DrawCtrl ctrl;
+
     float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
 
-    public GLCircleCarriage(float x, float y, float z) {
-        initSphereVertex(x, y, z);
-        createProgram();
+    public interface DrawCtrl{
+        void shaders_init(int mProgramHandle);
+        void shaders_free();
     }
 
-    /**
-     * Calculate the vertices of the spherical surface
-     */
+    public GLCircleCarriage(Context context, float x, float y, float z, float radius,
+                      DrawCtrl ctrl, String VERTEX_SHADER, String FRAGMENT_SHADER) {
+        this.radius = radius;
+
+        initSphereVertex(x, y, z);
+        createProgram(context, VERTEX_SHADER, FRAGMENT_SHADER);
+
+        this.ctrl = ctrl;
+    }
+
+    public GLCircleCarriage(Context context, float x, float y, float z, float radius) {
+        this.radius = radius;
+
+        initSphereVertex(x, y, z);
+        createProgram(context, null, null);
+
+        ctrl = new DrawCtrl() {
+            @Override
+            public void shaders_init(int mProgramHandle) {
+            }
+
+            @Override
+            public void shaders_free() {
+            }
+        };
+    }
+
     public void initSphereVertex(float x, float y, float z) {
         ArrayList<Float> vertex = new ArrayList<Float>();
 
@@ -132,7 +119,7 @@ public class GLCircleCarriage {
         }
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (number of coordinate values * 4 bytes per float)
-                vertices.length * 4);
+                vertices.length * BYTES_PER_FLOAT);
         // use the device hardware's native byte order
         bb.order(ByteOrder.nativeOrder());
 
@@ -147,7 +134,23 @@ public class GLCircleCarriage {
     /**
      * Create Program
      */
-    private void createProgram() {
+    private void createProgram(Context context, String vertex_sh, String fragment_sh) {
+        String VERTEX_SHADER, FRAGMENT_SHADER;
+
+        if (vertex_sh != null) {
+            VERTEX_SHADER = vertex_sh;
+        }
+        else {
+            VERTEX_SHADER = Utils.readStringFromResource(context, R.raw.circle_basic_vertex);
+        }
+
+        if (fragment_sh != null) {
+            FRAGMENT_SHADER = fragment_sh;
+        }
+        else {
+            FRAGMENT_SHADER = Utils.readStringFromResource(context, R.raw.circle_basic_fragment);
+        }
+
         int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, VERTEX_SHADER);
         int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, FRAGMENT_SHADER);
 
@@ -158,9 +161,10 @@ public class GLCircleCarriage {
 
         GLES20.glLinkProgram(mProgramHandle);
 
-        maPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Position");
-        muMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Matrix");
-        //muColorHandle = GLES20.glGetUniformLocation(mProgramHandle, "vColor");
+        if (vertex_sh == null) {
+            muMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
+            maPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Position");
+        }
     }
 
     /**
@@ -172,8 +176,11 @@ public class GLCircleCarriage {
                 GLES20.GL_FLOAT, false, 0, mVertexBuffer);
         GLES20.glEnableVertexAttribArray(maPositionHandle);
         GLES20.glUniformMatrix4fv(muMatrixHandle, 1, false, mvpMatrix, 0);
-        GLES20.glUniform4fv(muColorHandle, 1, color, 0);
+        ctrl.shaders_init(mProgramHandle);
+
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, mVertexCount);
+
+        ctrl.shaders_free();
         GLES20.glDisableVertexAttribArray(maPositionHandle);
         GLES20.glUseProgram(0);
     }
