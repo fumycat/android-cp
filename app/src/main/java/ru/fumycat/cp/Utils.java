@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Utils {
-    public static String readFromResource(Context context, int id) {
+    public static String readStringFromResource(Context context, int id) {
         BufferedReader r = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(id)));
         StringBuilder total = new StringBuilder();
         try {

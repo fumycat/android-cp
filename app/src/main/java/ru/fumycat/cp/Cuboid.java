@@ -42,13 +42,12 @@ public class Cuboid {
     private int vPMatrixHandle;
 
     /**
-     * context - чтобы читать шейдеры из файла
      * centerX/Y/Z - центр фигуры
      * dimX/Y/Z - размеры
      */
     public Cuboid(Context context, float centerX, float centerY, float centerZ, float dimX, float dimY, float dimZ) {
-        vertexShaderString = Utils.readFromResource(context, R.raw.cuboid_vertex);
-        fragmentShaderString = Utils.readFromResource(context, R.raw.cuboid_fragment);
+        vertexShaderString = Utils.readStringFromResource(context, R.raw.cuboid_vertex);
+        fragmentShaderString = Utils.readStringFromResource(context, R.raw.cuboid_fragment);
 
         float halfX = dimX / 2f;
         float halfY = dimY / 2f;
