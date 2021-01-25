@@ -20,7 +20,7 @@ public class Cuboid {
 
     private float[] vertices;
 
-    private byte[] order = {
+    protected byte[] order = {
             0, 4, 5, 0, 5, 1,
             1, 5, 6, 1, 6, 2,
             2, 6, 7, 2, 7, 3,
@@ -29,7 +29,7 @@ public class Cuboid {
             3, 0, 1, 3, 1, 2
     };
 
-    private float[][] colors = {
+    protected float[][] colors = {
             {1.0f, 0.5f, 0.0f, 1.0f},  // 0. orange
             {1.0f, 0.0f, 1.0f, 1.0f},  // 1. violet
             {0.0f, 1.0f, 0.0f, 1.0f},  // 2. green
@@ -38,13 +38,13 @@ public class Cuboid {
             {1.0f, 1.0f, 0.0f, 1.0f}   // 5. yellow
     };
 
-    private FloatBuffer vertexBuffer;
-    private ByteBuffer orderBuffer;
-    private int program;
+    protected FloatBuffer vertexBuffer;
+    protected ByteBuffer orderBuffer;
+    protected int program;
 
-    private int posHandle;
-    private int colHandle;
-    private int vPMatrixHandle;
+    protected int posHandle;
+    protected int colHandle;
+    protected int vPMatrixHandle;
 
     protected void setupVertices() {
         vertices = new float[]{

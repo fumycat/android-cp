@@ -16,6 +16,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private GLCircleCarriage mCarriageBack, mCarriageFront;
     private GLCylinder mCylinder;
     private Cuboid mCuboid;
+    private CuboidTexturesWIP mCuboidTextured;
 
     // vPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] vPMatrix = new float[16];
@@ -90,6 +91,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCarriageFront = new GLCircleCarriage(0, 0,3.9f);
         mCylinder = new GLCylinder(0, 4,0, 4f);
         mCuboid = new Cuboid(context, 1.5f, 0, 0, 2, 1,2);
+        mCuboidTextured = new CuboidTexturesWIP(context,
+                -1.5f, 0f, 0f,
+                2f, 1f, 2f,
+                mTextureDataHandleBrick);
     }
 
     @Override
@@ -133,5 +138,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCylinder.draw(finalMatrixCube);
 
         mCuboid.draw(finalMatrixCube);
+        mCuboidTextured.draw(finalMatrixCube);
     }
 }
