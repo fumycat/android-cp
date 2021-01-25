@@ -22,7 +22,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 
-        mRenderer = new MyGLRenderer();
+        mRenderer = new MyGLRenderer(this.getContext());
         setRenderer(mRenderer);
     }
 

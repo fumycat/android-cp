@@ -1,17 +1,23 @@
 package ru.fumycat.cp;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+
+import java.io.IOException;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
+    private Context context;
+
     private Building mBuilding;
     private GLCircleCarriage mCarriageBack, mCarriageFront;
     private GLCylinder mCylinder;
+    private Cuboid mCuboid;
 
     // vPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] vPMatrix = new float[16];
@@ -26,7 +32,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public volatile float tetta = 120f;
     public volatile float radius = -9;
 
-    public MyGLRenderer() {
+    public MyGLRenderer(Context context) {
+        this.context = context;
     }
 
     public float getFi() {
@@ -80,6 +87,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCarriageBack = new GLCircleCarriage(0, 0,-3.9f);
         mCarriageFront = new GLCircleCarriage(0, 0,3.9f);
         mCylinder = new GLCylinder(0, 4,0, 4f);
+        try {
+            mCuboid = new Cuboid(context);
+        } catch (IOException e) {
+            e.printStackTrace(); // никогда не будет
+        }
     }
 
     @Override
@@ -121,6 +133,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //mCarriageBack.draw(scratch);
         //mCarriageFront.draw(scratch);
         mCylinder.draw(finalMatrixCube);
+        // mCuboid.draw();
 
     }
 }
