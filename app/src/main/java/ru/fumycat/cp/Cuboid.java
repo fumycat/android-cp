@@ -4,23 +4,14 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.util.Log;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 public class Cuboid {
 
     private final String vertexShader;
+    private final String fragmentShader;
 
-    public Cuboid(Context context) throws IOException {
-        BufferedReader r = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(R.raw.cuboid_vertex)));
-        StringBuilder total = new StringBuilder();
-        for (String line; (line = r.readLine()) != null; ) {
-            total.append(line).append('\n');
-        }
-        vertexShader = total.toString();
-
-        Log.println(Log.INFO, "shader", vertexShader);
+    public Cuboid(Context context) {
+        vertexShader = Utils.readFromResource(context, R.raw.cuboid_vertex);
+        fragmentShader = Utils.readFromResource(context, R.raw.cuboid_fragment);
     }
 
     public void draw() {
