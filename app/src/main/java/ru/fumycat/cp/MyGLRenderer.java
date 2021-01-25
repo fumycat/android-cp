@@ -103,7 +103,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        float[] scratch = new float[16];
 
         // Camera
         double tettaRad = Math.toRadians(tetta);
@@ -125,10 +124,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         float[] finalMatrixCube = new float[16];
         Matrix.multiplyMM(finalMatrixCube, 0, vPMatrix, 0, rotationMatrix, 0);
 
-        // Draw triangle
+        // draw
         //mBuilding.draw(scratch);
-        mCarriageBack.draw(scratch);
-        mCarriageFront.draw(scratch);
-        mCylinder.draw(scratch);
+        mCarriageBack.draw(finalMatrixCube);
+        mCarriageFront.draw(finalMatrixCube);
+        mCylinder.draw(finalMatrixCube);
     }
 }
