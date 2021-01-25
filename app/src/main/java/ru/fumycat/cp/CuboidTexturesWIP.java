@@ -3,6 +3,7 @@ package ru.fumycat.cp;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -125,6 +126,12 @@ public class CuboidTexturesWIP extends Cuboid {
     private int mColorHandle;
     private int mNormalHandle;
     private int mvMatrixHandle;
+    private int mLightPosHandle;
+
+    private float[] mLightModelMatrix = new float[16];
+    private final float[] mLightPosInModelSpace = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
+    private final float[] mLightPosInWorldSpace = new float[4];
+    private final float[] mLightPosInEyeSpace = new float[4];
 
     /** Size of the texture coordinate data in elements. */
     private final int mTextureCoordinateDataSize = 2;
@@ -141,10 +148,10 @@ public class CuboidTexturesWIP extends Cuboid {
         GLES20.glAttachShader(program, vertexShader);
         GLES20.glAttachShader(program, fragmentShader);
 
-        GLES20.glBindAttribLocation(program, 0, "a_Position");
-        GLES20.glBindAttribLocation(program, 1, "a_Color");
-        GLES20.glBindAttribLocation(program, 2, "a_Normal");
-        GLES20.glBindAttribLocation(program, 3, "a_TexCoordinate");
+        // GLES20.glBindAttribLocation(program, 0, "a_Position");
+        GLES20.glBindAttribLocation(program, 0, "a_Color");
+        GLES20.glBindAttribLocation(program, 1, "a_Normal");
+        GLES20.glBindAttribLocation(program, 2, "a_TexCoordinate");
 
         GLES20.glLinkProgram(program);
     }
@@ -176,11 +183,15 @@ public class CuboidTexturesWIP extends Cuboid {
     public void draw(float[] mvpMatrix, float[] mvMatrix) {
         GLES20.glUseProgram(program);
 
+        Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(mLightPosInEyeSpace, 0, mvMatrix, 0, mLightPosInWorldSpace, 0);
+
         // Matrix.setIdentityM(mvpMatrix, 0);
 
-        mTextureUniformHandle = GLES20.glGetUniformLocation(program, "u_Texture");
         mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
         mvMatrixHandle = GLES20.glGetUniformLocation(program, "u_MVMatrix");
+        mLightPosHandle = GLES20.glGetUniformLocation(program, "u_LightPos");
+        mTextureUniformHandle = GLES20.glGetUniformLocation(program, "u_Texture");
         mPositionHandle = GLES20.glGetAttribLocation(program, "a_Position");
         mTextureCoordinateHandle = GLES20.glGetAttribLocation(program, "a_TexCoordinate");
         mColorHandle = GLES20.glGetAttribLocation(program, "a_Color");
@@ -204,6 +215,10 @@ public class CuboidTexturesWIP extends Cuboid {
 
         GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
         GLES20.glUniformMatrix4fv(mvMatrixHandle, 1, false, mvMatrix, 0);
+
+        // Log.println(Log.INFO, "drawing", "yes");
+
+        GLES20.glUniform3f(mLightPosHandle, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 36);
 
