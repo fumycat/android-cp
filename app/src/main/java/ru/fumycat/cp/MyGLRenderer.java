@@ -75,13 +75,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+        GLES20.glDepthFunc(GLES20.GL_LEQUAL);
+
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_FRONT);
-
-        // Вот это снизу должно фиксить глубину, но получается чёрный экран
-        // GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-        // GLES20.glDepthFunc(GLES20.GL_LEQUAL);
-        // GLES20.glDepthMask(true);
 
         mBuilding = new Building();
         mCarriageBack = new GLCircleCarriage(0, 0,-3.9f);
@@ -106,7 +106,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT); // без этого тоже работает вопрос зачём это
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+        float[] scratch = new float[16];
 
         // Camera
         double tettaRad = Math.toRadians(tetta);
@@ -128,12 +129,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         float[] finalMatrixCube = new float[16];
         Matrix.multiplyMM(finalMatrixCube, 0, vPMatrix, 0, rotationMatrix, 0);
 
-        // Draw
-        mBuilding.draw(finalMatrixCube);
-        //mCarriageBack.draw(scratch);
-        //mCarriageFront.draw(scratch);
-        mCylinder.draw(finalMatrixCube);
-        // mCuboid.draw();
-
+        // Draw triangle
+        //mBuilding.draw(scratch);
+        mCarriageBack.draw(scratch);
+        mCarriageFront.draw(scratch);
+        mCylinder.draw(scratch);
     }
 }

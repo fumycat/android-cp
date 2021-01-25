@@ -44,8 +44,14 @@ public class MyGLSurfaceView extends GLSurfaceView {
                     // Log.println(Log.INFO, "dx", String.valueOf(dx));
                     // Log.println(Log.INFO, "dy", String.valueOf(dy));
 
-                    mRenderer.setFi((mRenderer.getFi() - dx * 0.1f) % 360f);
-                    mRenderer.setTetta((mRenderer.getTetta() + dy * 0.1f) % 360f);
+                    float fi = (mRenderer.getFi() - dx * 0.1f);
+                    float tetta = (mRenderer.getTetta() + dy * 0.1f);
+
+                    if (tetta > 180f) tetta = 179.9f;
+                    if (tetta < 0f) tetta = 0.01f;
+
+                    mRenderer.setFi(fi % 360f);
+                    mRenderer.setTetta(tetta % 180f);
 
                     Log.println(Log.INFO, "tetta/fi",
                             String.valueOf(mRenderer.getTetta()) + " / " + String.valueOf(mRenderer.getFi()));
