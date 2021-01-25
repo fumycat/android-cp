@@ -84,6 +84,7 @@ public class Building {
             1.0f, -1.0f,  1.0f   // 1. right-bottom-front
     };
 
+
     private byte[] indices = {
             0, 1, 2, 2, 1, 3,
             4, 5, 6, 6, 5, 7,

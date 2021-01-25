@@ -87,7 +87,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCarriageBack = new GLCircleCarriage(0, 0,-3.9f);
         mCarriageFront = new GLCircleCarriage(0, 0,3.9f);
         mCylinder = new GLCylinder(0, 4,0, 4f);
-        mCuboid = new Cuboid(context);
+        mCuboid = new Cuboid(context, 1.5f, 0, 0, 2, 1,2);
     }
 
     @Override
@@ -125,9 +125,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(finalMatrixCube, 0, vPMatrix, 0, rotationMatrix, 0);
 
         // draw
-        //mBuilding.draw(scratch);
+        // mBuilding.draw(finalMatrixCube);
         mCarriageBack.draw(finalMatrixCube);
         mCarriageFront.draw(finalMatrixCube);
         mCylinder.draw(finalMatrixCube);
+
+        mCuboid.draw(finalMatrixCube);
     }
 }
