@@ -11,10 +11,15 @@ import java.util.Arrays;
 
 public class Cuboid {
 
-    private final String vertexShaderString;
-    private final String fragmentShaderString;
+    protected float centerX;
+    protected float centerY;
+    protected float centerZ;
+    protected float dimX;
+    protected float dimY;
+    protected float dimZ;
 
     private float[] vertices;
+
     private byte[] order = {
             0, 4, 5, 0, 5, 1,
             1, 5, 6, 1, 6, 2,
@@ -35,23 +40,13 @@ public class Cuboid {
 
     private FloatBuffer vertexBuffer;
     private ByteBuffer orderBuffer;
-    private final int program;
+    private int program;
 
     private int posHandle;
     private int colHandle;
     private int vPMatrixHandle;
 
-    /**
-     * centerX/Y/Z - центр фигуры
-     * dimX/Y/Z - размеры
-     */
-    public Cuboid(Context context, float centerX, float centerY, float centerZ, float dimX, float dimY, float dimZ) {
-        vertexShaderString = Utils.readStringFromResource(context, R.raw.cuboid_vertex);
-        fragmentShaderString = Utils.readStringFromResource(context, R.raw.cuboid_fragment);
-
-        float halfX = dimX / 2f;
-        float halfY = dimY / 2f;
-        float halfZ = dimZ / 2f;
+    protected void setupVertices() {
         vertices = new float[]{
                 -1.0f, -1.0f, -1.0f,
                 1.0f, -1.0f, -1.0f,
@@ -88,18 +83,12 @@ public class Cuboid {
                     break;
             }
         }
+        // Log.println(Log.INFO, "Cuboid", Arrays.toString(vertices));
+    }
 
-        Log.println(Log.INFO, "Cuboid", Arrays.toString(vertices));
-
-        vertexBuffer = ByteBuffer.allocateDirect(vertices.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        vertexBuffer.put(vertices);
-        vertexBuffer.position(0);
-
-        orderBuffer = ByteBuffer.allocateDirect(order.length);
-        orderBuffer.put(order);
-        orderBuffer.position(0);
+    protected void createAndLink(Context context) {
+        String vertexShaderString = Utils.readStringFromResource(context, R.raw.cuboid_vertex);
+        String fragmentShaderString = Utils.readStringFromResource(context, R.raw.cuboid_fragment);
 
         int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderString);
         int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderString);
@@ -108,6 +97,47 @@ public class Cuboid {
         GLES20.glAttachShader(program, vertexShader);
         GLES20.glAttachShader(program, fragmentShader);
         GLES20.glLinkProgram(program);
+    }
+
+    protected void setupVertexBuffer() {
+        vertexBuffer = ByteBuffer.allocateDirect(vertices.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+        vertexBuffer.put(vertices);
+        vertexBuffer.position(0);
+    }
+
+    protected void setupOrderBuffer() {
+        orderBuffer = ByteBuffer.allocateDirect(order.length);
+        orderBuffer.put(order);
+        orderBuffer.position(0);
+    }
+
+    public Cuboid(float centerX, float centerY, float centerZ, float dimX, float dimY, float dimZ) {
+        this.centerX = centerX;
+        this.centerY = centerY;
+        this.centerZ = centerZ;
+        this.dimX = dimX;
+        this.dimY = dimY;
+        this.dimZ = dimZ;
+
+        setupVertices();
+        setupVertexBuffer();
+        setupOrderBuffer();
+    }
+
+    public Cuboid(Context context, float centerX, float centerY, float centerZ, float dimX, float dimY, float dimZ) {
+        this.centerX = centerX;
+        this.centerY = centerY;
+        this.centerZ = centerZ;
+        this.dimX = dimX;
+        this.dimY = dimY;
+        this.dimZ = dimZ;
+
+        setupVertices();
+        setupVertexBuffer();
+        setupOrderBuffer();
+        createAndLink(context);
     }
 
     public void draw(float[] mvpMatrix) {

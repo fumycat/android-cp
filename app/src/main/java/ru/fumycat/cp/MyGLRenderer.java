@@ -5,8 +5,6 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
-import java.io.IOException;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -31,6 +29,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public volatile float fi = 30f;
     public volatile float tetta = 120f;
     public volatile float radius = -9;
+
+    private int mTextureDataHandleBrick;
 
     public MyGLRenderer(Context context) {
         this.context = context;
@@ -82,6 +82,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_FRONT);
+
+        mTextureDataHandleBrick = Utils.loadTexture(context, R.drawable.stone_wall_public_domain);
 
         mBuilding = new Building();
         mCarriageBack = new GLCircleCarriage(0, 0,-3.9f);

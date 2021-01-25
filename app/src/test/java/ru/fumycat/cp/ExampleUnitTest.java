@@ -43,7 +43,7 @@ public class ExampleUnitTest {
         }
 
         System.out.println(Arrays.toString(arr));
-        assertArrayEquals(expected, arr, (float) 0.0);
+        assertArrayEquals(expected, arr, 0f);
     }
 
 
