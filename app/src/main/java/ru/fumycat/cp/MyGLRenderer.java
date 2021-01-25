@@ -19,7 +19,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private CuboidTexturesWIP mCuboidTextured;
 
     // vPMatrix is an abbreviation for "Model View Projection Matrix"
-    private final float[] vPMatrix = new float[16];
+    private final float[] mvMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
 
@@ -93,7 +93,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCuboid = new Cuboid(context, 1.5f, 0, 0, 2, 1,2);
         mCuboidTextured = new CuboidTexturesWIP(context,
                 -1.5f, 0f, 0f,
-                2f, 1f, 2f,
+                2f, 2f, 2f,
                 mTextureDataHandleBrick);
     }
 
@@ -124,12 +124,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 0f, 1.0f, 0.0f);
 
         // Calculate
-        Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        Matrix.multiplyMM(mvMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
         Matrix.setRotateM(rotationMatrix, 0, cubeAngel, 0, 0, 1.0f);
 
         float[] finalMatrixCube = new float[16];
-        Matrix.multiplyMM(finalMatrixCube, 0, vPMatrix, 0, rotationMatrix, 0);
+        Matrix.multiplyMM(finalMatrixCube, 0, mvMatrix, 0, rotationMatrix, 0);
 
         // draw
         // mBuilding.draw(finalMatrixCube);
@@ -138,6 +138,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCylinder.draw(finalMatrixCube);
 
         mCuboid.draw(finalMatrixCube);
-        mCuboidTextured.draw(finalMatrixCube);
+        mCuboidTextured.draw(finalMatrixCube, mvMatrix);
     }
 }

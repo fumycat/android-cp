@@ -2,12 +2,10 @@ package ru.fumycat.cp;
 
 import android.content.Context;
 import android.opengl.GLES20;
-import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 
 public class Cuboid {
 
@@ -42,9 +40,9 @@ public class Cuboid {
     protected ByteBuffer orderBuffer;
     protected int program;
 
-    protected int posHandle;
+    protected int mPositionHandle;
     protected int colHandle;
-    protected int vPMatrixHandle;
+    protected int mvpMatrixHandle;
 
     protected void setupVertices() {
         vertices = new float[]{
@@ -143,12 +141,12 @@ public class Cuboid {
     public void draw(float[] mvpMatrix) {
         GLES20.glUseProgram(program);
 
-        posHandle = GLES20.glGetAttribLocation(program, "vPosition");
-        GLES20.glEnableVertexAttribArray(posHandle);
-        GLES20.glVertexAttribPointer(posHandle, 3, GLES20.GL_FLOAT, false, 12, vertexBuffer);
+        mPositionHandle = GLES20.glGetAttribLocation(program, "vPosition");
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 12, vertexBuffer);
 
-        vPMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
-        GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0);
+        mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
+        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
         colHandle = GLES20.glGetUniformLocation(program, "vColor");
 
@@ -158,6 +156,6 @@ public class Cuboid {
             GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, orderBuffer);
         }
 
-        GLES20.glDisableVertexAttribArray(posHandle);
+        GLES20.glDisableVertexAttribArray(mPositionHandle);
     }
 }
