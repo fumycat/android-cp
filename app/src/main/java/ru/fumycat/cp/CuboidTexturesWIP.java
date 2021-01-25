@@ -2,6 +2,7 @@ package ru.fumycat.cp;
 
 import android.content.Context;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -175,11 +176,13 @@ public class CuboidTexturesWIP extends Cuboid {
     public void draw(float[] mvpMatrix, float[] mvMatrix) {
         GLES20.glUseProgram(program);
 
-        mPositionHandle = GLES20.glGetAttribLocation(program, "vPosition");
+        // Matrix.setIdentityM(mvpMatrix, 0);
+
         mTextureUniformHandle = GLES20.glGetUniformLocation(program, "u_Texture");
-        mTextureCoordinateHandle = GLES20.glGetAttribLocation(program, "a_TexCoordinate");
         mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
         mvMatrixHandle = GLES20.glGetUniformLocation(program, "u_MVMatrix");
+        mPositionHandle = GLES20.glGetAttribLocation(program, "a_Position");
+        mTextureCoordinateHandle = GLES20.glGetAttribLocation(program, "a_TexCoordinate");
         mColorHandle = GLES20.glGetAttribLocation(program, "a_Color");
         mNormalHandle = GLES20.glGetAttribLocation(program, "a_Normal");
 
@@ -212,9 +215,9 @@ public class CuboidTexturesWIP extends Cuboid {
 //            GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, orderBuffer);
 //        }
 
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
-        GLES20.glDisableVertexAttribArray(colHandle);
-        GLES20.glDisableVertexAttribArray(mNormalHandle);
-        GLES20.glDisableVertexAttribArray(mTextureCoordinateHandle);
+        // GLES20.glDisableVertexAttribArray(mPositionHandle);
+        // GLES20.glDisableVertexAttribArray(colHandle);
+        // GLES20.glDisableVertexAttribArray(mNormalHandle);
+        // GLES20.glDisableVertexAttribArray(mTextureCoordinateHandle);
     }
 }
