@@ -138,6 +138,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCylinder.draw(finalMatrixCube);
 
         mCuboid.draw(finalMatrixCube);
-        mCuboidTextured.draw(finalMatrixCube, mvMatrix);
+        mCuboidTextured.draw(finalMatrixCube, viewMatrix);
     }
 }

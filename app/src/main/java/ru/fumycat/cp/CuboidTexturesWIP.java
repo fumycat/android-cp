@@ -201,6 +201,7 @@ public class CuboidTexturesWIP extends Cuboid {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDataHandle);
         GLES20.glUniform1i(mTextureUniformHandle, 0);
 
+
         GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 12, vertexBuffer);
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
@@ -213,8 +214,8 @@ public class CuboidTexturesWIP extends Cuboid {
         GLES20.glVertexAttribPointer(mTextureCoordinateHandle, mTextureCoordinateDataSize, GLES20.GL_FLOAT, false, 0, mCubeTextureCoordinates);
         GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
 
-        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
         GLES20.glUniformMatrix4fv(mvMatrixHandle, 1, false, mvMatrix, 0);
+        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
         // Log.println(Log.INFO, "drawing", "yes");
 
