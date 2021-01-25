@@ -18,10 +18,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private Cuboid mCuboid;
     private CuboidTexturesWIP mCuboidTextured;
 
+    private float[] mvMatrix = new float[16];
+    private float[] mModelMatrix = new float[16];
     // vPMatrix is an abbreviation for "Model View Projection Matrix"
-    private final float[] mvMatrix = new float[16];
-    private final float[] projectionMatrix = new float[16];
-    private final float[] viewMatrix = new float[16];
+    private float[] mvpMatrix = new float[16];
+    private float[] projectionMatrix = new float[16];
+    private float[] viewMatrix = new float[16];
 
     private final float[] rotationMatrix = new float[16];
 
@@ -90,10 +92,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCarriageBack = new GLCircleCarriage(0, 0,-3.9f);
         mCarriageFront = new GLCircleCarriage(0, 0,3.9f);
         mCylinder = new GLCylinder(context, 0, 4,0, 4f);
-        mCuboid = new Cuboid(context, 1.5f, 0, 0, 2, 1,2);
+        mCuboid = new Cuboid(context, 3f, 0, 0, 2, 1,2);
         mCuboidTextured = new CuboidTexturesWIP(context,
-                -1.5f, 0f, 0f,
-                2f, 2f, 2f,
+                -3f, 0f, 0f,
+                2f, 4f, 2f,
                 mTextureDataHandleBrick);
     }
 
@@ -110,7 +112,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
+        // GLES20.glCullFace(GLES20.GL_FRONT);
         // Camera
         double tettaRad = Math.toRadians(tetta);
         double fiRad = Math.toRadians(fi);
@@ -124,20 +126,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 0f, 1.0f, 0.0f);
 
         // Calculate
-        Matrix.multiplyMM(mvMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-
-        Matrix.setRotateM(rotationMatrix, 0, cubeAngel, 0, 0, 1.0f);
-
-        float[] finalMatrixCube = new float[16];
-        Matrix.multiplyMM(finalMatrixCube, 0, mvMatrix, 0, rotationMatrix, 0);
+        // Matrix.multiplyMM(mvMatrix, 0, viewMatrix, 0, mvMatrix, 0);
+        Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
         // draw
         // mBuilding.draw(finalMatrixCube);
-        mCarriageBack.draw(finalMatrixCube);
-        mCarriageFront.draw(finalMatrixCube);
-        mCylinder.draw(finalMatrixCube);
+        mCarriageBack.draw(mvpMatrix);
+        mCarriageFront.draw(mvpMatrix);
+        mCylinder.draw(mvpMatrix);
 
-        mCuboid.draw(finalMatrixCube);
-        mCuboidTextured.draw(finalMatrixCube, viewMatrix);
+        mCuboid.draw(mvpMatrix);
+
+        GLES20.glCullFace(GLES20.GL_BACK);
+        mCuboidTextured.draw(projectionMatrix, decX, decY, decZ);
+        GLES20.glCullFace(GLES20.GL_FRONT);
     }
 }

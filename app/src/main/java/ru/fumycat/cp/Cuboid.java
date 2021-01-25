@@ -119,9 +119,9 @@ public class Cuboid {
         this.dimY = dimY;
         this.dimZ = dimZ;
 
-        setupVertices();
-        setupVertexBuffer();
-        setupOrderBuffer();
+        //setupVertices();
+        //setupVertexBuffer();
+        //setupOrderBuffer();
     }
 
     public Cuboid(Context context, float centerX, float centerY, float centerZ, float dimX, float dimY, float dimZ) {
