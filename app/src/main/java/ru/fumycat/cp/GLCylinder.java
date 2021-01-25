@@ -1,5 +1,6 @@
 package ru.fumycat.cp;
 
+import android.content.Context;
 import android.opengl.GLES20;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.nio.FloatBuffer;
 import android.opengl.Matrix;
 
 public class GLCylinder {
-    private static final String VERTEX_SHADER =
+    /*private static final String VERTEX_SHADER =
             "uniform mat4 u_Matrix;//The final transformation matrix\n" +
                     "attribute vec4 a_Position;//Vertex position\n" +
                     "varying vec4 vPosition;//The vertex position used to pass to the fragment shader\n" +
@@ -25,7 +26,7 @@ public class GLCylinder {
                     "uniform vec4 vColor;" +
                     "void main() {" +
                     "  gl_FragColor = vColor;" +
-                    "}";
+                    "}"; */
 
     private float radius = 1.0f; // the radius of the ball
     final double angleSpan = Math.PI / 90f; // The angle at which the ball is divided into units
@@ -45,9 +46,9 @@ public class GLCylinder {
 
     float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
 
-    public GLCylinder(float x, float y, float z, float length) {
+    public GLCylinder(Context context, float x, float y, float z, float length) {
         initCylinderVertex(x, y, z, length);
-        createProgram();
+        createProgram(context);
     }
 
     /**
@@ -156,7 +157,10 @@ public class GLCylinder {
     /**
      * Create Program
      */
-    private void createProgram() {
+    private void createProgram(Context context) {
+        String VERTEX_SHADER = Utils.readStringFromResource(context, R.raw.basic_vertex);
+        String FRAGMENT_SHADER = Utils.readStringFromResource(context, R.raw.basic_fragment);
+
         int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, VERTEX_SHADER);
         int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, FRAGMENT_SHADER);
 
@@ -168,8 +172,8 @@ public class GLCylinder {
         GLES20.glLinkProgram(mProgramHandle);
 
         maPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Position");
-        muMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Matrix");
-        muColorHandle = GLES20.glGetUniformLocation(mProgramHandle, "vColor");
+        muMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
+        muColorHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Color");
     }
 
     /**

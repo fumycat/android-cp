@@ -188,7 +188,7 @@ public class CuboidTexturesWIP extends Cuboid {
 
         // Matrix.setIdentityM(mvpMatrix, 0);
 
-        mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
+        mvpMatrixHandle = GLES20.glGetUniformLocation(program, "u_MVPMatrix");
         mvMatrixHandle = GLES20.glGetUniformLocation(program, "u_MVMatrix");
         mLightPosHandle = GLES20.glGetUniformLocation(program, "u_LightPos");
         mTextureUniformHandle = GLES20.glGetUniformLocation(program, "u_Texture");
@@ -223,17 +223,10 @@ public class CuboidTexturesWIP extends Cuboid {
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 36);
 
-        // colHandle = GLES20.glGetUniformLocation(program, "vColor");
 
-//        for (int face = 0; face < order.length / 6; face++) {
-//            // GLES20.glUniform4fv(colHandle, 1, colors[face], 0);
-//            orderBuffer.position(face * 6);
-//            GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, orderBuffer);
-//        }
-
-        // GLES20.glDisableVertexAttribArray(mPositionHandle);
-        // GLES20.glDisableVertexAttribArray(colHandle);
-        // GLES20.glDisableVertexAttribArray(mNormalHandle);
-        // GLES20.glDisableVertexAttribArray(mTextureCoordinateHandle);
+         GLES20.glDisableVertexAttribArray(mPositionHandle);
+         GLES20.glDisableVertexAttribArray(colHandle);
+         GLES20.glDisableVertexAttribArray(mNormalHandle);
+         GLES20.glDisableVertexAttribArray(mTextureCoordinateHandle);
     }
 }

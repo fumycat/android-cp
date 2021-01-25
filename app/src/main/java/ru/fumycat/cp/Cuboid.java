@@ -85,8 +85,8 @@ public class Cuboid {
     }
 
     protected void createAndLink(Context context) {
-        String vertexShaderString = Utils.readStringFromResource(context, R.raw.cuboid_vertex);
-        String fragmentShaderString = Utils.readStringFromResource(context, R.raw.cuboid_fragment);
+        String vertexShaderString = Utils.readStringFromResource(context, R.raw.basic_vertex);
+        String fragmentShaderString = Utils.readStringFromResource(context, R.raw.basic_fragment);
 
         int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderString);
         int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderString);
@@ -141,14 +141,14 @@ public class Cuboid {
     public void draw(float[] mvpMatrix) {
         GLES20.glUseProgram(program);
 
-        mPositionHandle = GLES20.glGetAttribLocation(program, "vPosition");
+        mPositionHandle = GLES20.glGetAttribLocation(program, "a_Position");
         GLES20.glEnableVertexAttribArray(mPositionHandle);
         GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 12, vertexBuffer);
 
-        mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
+        mvpMatrixHandle = GLES20.glGetUniformLocation(program, "u_MVPMatrix");
         GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
-        colHandle = GLES20.glGetUniformLocation(program, "vColor");
+        colHandle = GLES20.glGetUniformLocation(program, "u_Color");
 
         for (int face = 0; face < order.length / 6; face++) {
             GLES20.glUniform4fv(colHandle, 1, colors[face], 0);

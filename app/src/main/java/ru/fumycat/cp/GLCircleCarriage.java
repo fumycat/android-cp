@@ -172,7 +172,7 @@ public class GLCircleCarriage {
                 GLES20.GL_FLOAT, false, 0, mVertexBuffer);
         GLES20.glEnableVertexAttribArray(maPositionHandle);
         GLES20.glUniformMatrix4fv(muMatrixHandle, 1, false, mvpMatrix, 0);
-        //GLES20.glUniform4fv(muColorHandle, 1, color, 0);
+        GLES20.glUniform4fv(muColorHandle, 1, color, 0);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, mVertexCount);
         GLES20.glDisableVertexAttribArray(maPositionHandle);
         GLES20.glUseProgram(0);

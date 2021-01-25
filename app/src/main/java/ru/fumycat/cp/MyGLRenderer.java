@@ -89,7 +89,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mBuilding = new Building();
         mCarriageBack = new GLCircleCarriage(0, 0,-3.9f);
         mCarriageFront = new GLCircleCarriage(0, 0,3.9f);
-        mCylinder = new GLCylinder(0, 4,0, 4f);
+        mCylinder = new GLCylinder(context, 0, 4,0, 4f);
         mCuboid = new Cuboid(context, 1.5f, 0, 0, 2, 1,2);
         mCuboidTextured = new CuboidTexturesWIP(context,
                 -1.5f, 0f, 0f,
