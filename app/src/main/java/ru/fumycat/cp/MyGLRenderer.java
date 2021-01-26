@@ -22,6 +22,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private CuboidTexturesWIP mCuboidClock;
     private CuboidTexturesWIP mBaseFloor;
 
+    private GLCircleCarriage mLamp0;
+    private GLCircleCarriage mLamp1;
+
+
     private GLCylinder mPool0;
     private GLCylinder mPool1;
 
@@ -106,6 +110,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mTextureDataHandleDoor = Utils.loadTexture(context, R.drawable.door);
         mTextureDataHandlerClock = Utils.loadTexture(context, R.drawable.clock);
 
+        GLCircleCarriage.DrawCtrl white_ctrl = new GLCircleCarriage.DrawCtrl(){
+            @Override
+            public void shaders_free() {
+
+            }
+
+            @Override
+            public void shaders_init(int mProgramHandle) {
+                float color[] = { 1f, 1f, 1f, 1.0f };
+                GLES20.glUniform4fv(GLES20.glGetUniformLocation(mProgramHandle, "u_Color"), 1, color, 0);
+            }
+        };
+
         GLCircleCarriage.DrawCtrl ctrl = new GLCircleCarriage.DrawCtrl(){
             @Override
             public void shaders_free() {
@@ -166,6 +183,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         mPool0 = new GLCylinder(context, 3f, 3f,-2.5f, 0.05f,5f, mTextureDataHandleMetal);
         mPool1 = new GLCylinder(context, -3f, 3f,-2.5f, 0.05f,5f, mTextureDataHandleMetal);
+
+        mLamp0 = new GLCircleCarriage(context,3f, 5,6f, 0.3f, white_ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
+        mLamp1 = new GLCircleCarriage(context,-3f, 5,6f, 0.3f, white_ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
+
     }
 
     @Override
@@ -202,7 +223,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // mBuilding.draw(finalMatrixCube);
         //mCarriageBack.draw(mvpMatrix);
         //mCarriageFront.draw(mvpMatrix);
-        mCylinder.draw(mvpMatrix);
+        // mCylinder.draw(mvpMatrix);
 
         // mCuboid.draw(mvpMatrix);
 
@@ -219,5 +240,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(poleMVPMatrix, 0, mvpMatrix, 0, poleRotateMatrix, 0);
         mPool0.draw(poleMVPMatrix);
         mPool1.draw(poleMVPMatrix);
+
+        mLamp0.draw(mvpMatrix);
+        mLamp1.draw(mvpMatrix);
     }
 }
