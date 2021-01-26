@@ -13,12 +13,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private Context context;
 
     private Building mBuilding;
-    private GLCircleCarriage mCarriageBack, mCarriageFront;
-    private GLCylinder mCylinder;
     private Cuboid mCuboid;
     private CuboidTexturesWIP mCuboidBuilding;
     private CuboidTexturesWIP mCuboidFloor;
     private CuboidTexturesWIP mCuboidDoor;
+
     private CuboidTexturesWIP mCuboidClock;
     private CuboidTexturesWIP mBaseFloor;
 
@@ -28,6 +27,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private GLCylinder mPool0;
     private GLCylinder mPool1;
+
+    private Carriage carriage;
 
     private float[] mvMatrix = new float[16];
     private float[] mModelMatrix = new float[16];
@@ -135,7 +136,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 GLES20.glUniform4fv(GLES20.glGetUniformLocation(mProgramHandle, "u_Color"), 1, color, 0);
             }
         };
-        
+
         float[] cubeColorData = new float[36 * 4];
         for (int i = 0; i < 36 * 4; i++) {
             if (i % 4 == 2) {
@@ -156,9 +157,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
         mBuilding = new Building();
-        mCarriageBack = new GLCircleCarriage(context, 0, 0,-3.9f, 1, color, 0);
-        mCarriageFront = new GLCircleCarriage(context,0, 0,3.9f, 1, color, mTextureDataHandleMetal);
-        mCylinder = new GLCylinder(context, 0, 0,0, 0.5f,1f, color, 0);
         mCuboid = new Cuboid(context, 1.5f, 0, 0, 2, 1,2);
         mCuboidBuilding = new CuboidTexturesWIP(context,
                 0f, 5f, 16f,
@@ -187,6 +185,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mLamp0 = new GLCircleCarriage(context,3f, 5,6f, 0.3f, white_ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
         mLamp1 = new GLCircleCarriage(context,-3f, 5,6f, 0.3f, white_ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
 
+        carriage = new Carriage(context, 0, 5, -5, mTextureDataHandleMetal);
     }
 
     @Override
@@ -223,14 +222,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // mBuilding.draw(finalMatrixCube);
         //mCarriageBack.draw(mvpMatrix);
         //mCarriageFront.draw(mvpMatrix);
-        // mCylinder.draw(mvpMatrix);
 
-        // mCuboid.draw(mvpMatrix);
-        mCarriageBack.draw(mvpMatrix);
-        mCarriageFront.draw(mvpMatrix);
         //mCylinder.draw(mvpMatrix);
 
         //mCuboid.draw(mvpMatrix);
+
+        carriage.draw(mvpMatrix);
 
         GLES20.glCullFace(GLES20.GL_BACK);
         mCuboidBuilding.draw(projectionMatrix, decX, decY, decZ);
