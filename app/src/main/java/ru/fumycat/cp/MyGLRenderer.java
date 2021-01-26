@@ -135,8 +135,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 GLES20.glUniform4fv(GLES20.glGetUniformLocation(mProgramHandle, "u_Color"), 1, color, 0);
             }
         };
-
-
+        
         float[] cubeColorData = new float[36 * 4];
         for (int i = 0; i < 36 * 4; i++) {
             if (i % 4 == 2) {
@@ -155,10 +154,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             }
         }
 
+        float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
         mBuilding = new Building();
-        mCarriageBack = new GLCircleCarriage(context, 0, 0,-3.9f, 1);
-        mCarriageFront = new GLCircleCarriage(context,0, 0,3.9f, 1, ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
-        mCylinder = new GLCylinder(context, 0, 0,0, 0.5f,1f, mTextureDataHandleMetal);
+        mCarriageBack = new GLCircleCarriage(context, 0, 0,-3.9f, 1, color, 0);
+        mCarriageFront = new GLCircleCarriage(context,0, 0,3.9f, 1, color, mTextureDataHandleMetal);
+        mCylinder = new GLCylinder(context, 0, 0,0, 0.5f,1f, color, 0);
         mCuboid = new Cuboid(context, 1.5f, 0, 0, 2, 1,2);
         mCuboidBuilding = new CuboidTexturesWIP(context,
                 0f, 5f, 16f,
@@ -226,6 +226,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // mCylinder.draw(mvpMatrix);
 
         // mCuboid.draw(mvpMatrix);
+        mCarriageBack.draw(mvpMatrix);
+        mCarriageFront.draw(mvpMatrix);
+        //mCylinder.draw(mvpMatrix);
+
+        //mCuboid.draw(mvpMatrix);
 
         GLES20.glCullFace(GLES20.GL_BACK);
         mCuboidBuilding.draw(projectionMatrix, decX, decY, decZ);

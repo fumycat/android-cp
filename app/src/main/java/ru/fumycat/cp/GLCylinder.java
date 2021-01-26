@@ -9,6 +9,8 @@ import android.opengl.GLUtils;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Arrays;
+
 import android.opengl.Matrix;
 
 public class GLCylinder {
@@ -21,6 +23,7 @@ public class GLCylinder {
     private final float radius; // the radius of the ball
     private final double angleSpan = Math.PI / 90f; // The angle at which the ball is divided into units
     private final int textureDataHandle;
+    private final float color[];
 
     private FloatBuffer mVertexBuffer;// Vertex coordinates
     private FloatBuffer mTextureBuffer;
@@ -36,7 +39,7 @@ public class GLCylinder {
 
     DrawCtrl ctrl;
 
-    float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
+    //float color[] = { 226 / 255f, 176 / 255f, 0 / 255f, 1.0f };
 
     private void createProgram(Context context, String vertex_sh, String fragment_sh) {
         String VERTEX_SHADER, FRAGMENT_SHADER;
@@ -44,15 +47,21 @@ public class GLCylinder {
         if (vertex_sh != null) {
             VERTEX_SHADER = vertex_sh;
         }
-        else {
+        else if (textureDataHandle != 0){
             VERTEX_SHADER = Utils.readStringFromResource(context, R.raw.cylinder_basic_vertex);
+        }
+        else {
+            VERTEX_SHADER = Utils.readStringFromResource(context, R.raw.basic_vertex);
         }
 
         if (fragment_sh != null) {
             FRAGMENT_SHADER = fragment_sh;
         }
-        else {
+        else if (textureDataHandle != 0) {
             FRAGMENT_SHADER = Utils.readStringFromResource(context, R.raw.cylinder_basic_fragment);
+        }
+        else {
+            FRAGMENT_SHADER = Utils.readStringFromResource(context, R.raw.basic_fragment);
         }
 
         int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, VERTEX_SHADER);
@@ -85,10 +94,11 @@ public class GLCylinder {
         void shaders_free();
     }
 
-    public GLCylinder(Context context, float x, float y, float z, float radius, float length, int texture,
+    public GLCylinder(Context context, float x, float y, float z, float radius, float length, float[] obj_color, int texture,
                       DrawCtrl ctrl, String VERTEX_SHADER, String FRAGMENT_SHADER) {
         this.textureDataHandle = texture;
         this.radius = radius;
+        this.color = Arrays.copyOf(obj_color, obj_color.length);
 
         initCylinderVertex(x, y, z, length);
         createProgram(context, VERTEX_SHADER, FRAGMENT_SHADER);
@@ -96,9 +106,10 @@ public class GLCylinder {
         this.ctrl = ctrl;
     }
 
-    public GLCylinder(Context context, float x, float y, float z, float radius, float length, int texture) {
+    public GLCylinder(Context context, float x, float y, float z, float radius, float length, float[] obj_color, int texture) {
         this.textureDataHandle = texture;
         this.radius = radius;
+        this.color = Arrays.copyOf(obj_color, obj_color.length);
 
         initCylinderVertex(x, y, z, length);
         createProgram(context, null, null);
@@ -233,11 +244,13 @@ public class GLCylinder {
         GLES20.glEnableVertexAttribArray(maPositionHandle);
         GLES20.glUniformMatrix4fv(muMatrixHandle, 1, false, mvpMatrix, 0);
 
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDataHandle);
-        GLES20.glUniform1i(mTextureUniformHandle, 0);
-        GLES20.glVertexAttribPointer(mTextureCoordinateHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
-        GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
+        if (textureDataHandle != 0) {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDataHandle);
+            GLES20.glUniform1i(mTextureUniformHandle, 0);
+            GLES20.glVertexAttribPointer(mTextureCoordinateHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
+            GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
+        }
         ctrl.shaders_init();
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, mVertexCount);
