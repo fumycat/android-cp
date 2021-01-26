@@ -16,7 +16,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private GLCircleCarriage mCarriageBack, mCarriageFront;
     private GLCylinder mCylinder;
     private Cuboid mCuboid;
-    private CuboidTexturesWIP mCuboidTextured;
+    private CuboidTexturesWIP mCuboidBuilding;
+    private CuboidTexturesWIP mCuboidFloor;
+    private CuboidTexturesWIP mCuboidDoor;
 
     private float[] mvMatrix = new float[16];
     private float[] mModelMatrix = new float[16];
@@ -35,6 +37,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private int mTextureDataHandleBrick;
     private int mTextureDataHandleMetal;
+    private int mTextureDataHandleConcrete;
+    private int mTextureDataHandleDoor;
+    private int mTextureDataHandlerClock;
 
     public MyGLRenderer(Context context) {
         this.context = context;
@@ -87,8 +92,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_FRONT);
 
-        mTextureDataHandleBrick = Utils.loadTexture(context, R.drawable.stone_wall_public_domain);
+        mTextureDataHandleBrick = Utils.loadTexture(context, R.drawable.stone_wall_ext);
         mTextureDataHandleMetal = Utils.loadTexture(context, R.drawable.rasty_metal);
+        mTextureDataHandleConcrete = Utils.loadTexture(context, R.drawable.concrete_floor);
+        mTextureDataHandleDoor = Utils.loadTexture(context, R.drawable.door);
+        mTextureDataHandlerClock = Utils.loadTexture(context, R.drawable.clock);
 
         GLCircleCarriage.DrawCtrl ctrl = new GLCircleCarriage.DrawCtrl(){
             @Override
@@ -103,15 +111,33 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             }
         };
 
+
+        float[] cubeColorData = new float[36 * 4];
+        for (int i = 0; i < 36 * 4; i++) {
+            if (i % 4 == 2) {
+                cubeColorData[i] = 1.0f;
+            } else {
+                cubeColorData[i] = 1.0f;
+            }
+        }
+
         mBuilding = new Building();
         mCarriageBack = new GLCircleCarriage(context, 0, 0,-3.9f, 1);
         mCarriageFront = new GLCircleCarriage(context,0, 0,3.9f, 1, ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
         mCylinder = new GLCylinder(context, 0, 0,0, 0.5f,1f, mTextureDataHandleMetal);
         mCuboid = new Cuboid(context, 1.5f, 0, 0, 2, 1,2);
-        mCuboidTextured = new CuboidTexturesWIP(context,
-                -3f, 0f, 0f,
-                2f, 4f, 2f,
-                mTextureDataHandleBrick);
+        mCuboidBuilding = new CuboidTexturesWIP(context,
+                0f, 5f, 16f,
+                24f, 8f, 12f,
+                mTextureDataHandleBrick, cubeColorData);
+        mCuboidFloor = new CuboidTexturesWIP(context,
+                0f, 0.5f, 14f,
+                32f, 1f, 24f,
+                mTextureDataHandleConcrete, cubeColorData);
+        mCuboidDoor = new CuboidTexturesWIP(context,
+                0f, 3f, 9.9f,
+                3f, 4f, 0.1f,
+                mTextureDataHandleDoor, cubeColorData);
     }
 
     @Override
@@ -152,8 +178,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         mCuboid.draw(mvpMatrix);
 
-        //GLES20.glCullFace(GLES20.GL_BACK);
-        //mCuboidTextured.draw(projectionMatrix, decX, decY, decZ);
-        //GLES20.glCullFace(GLES20.GL_FRONT);
+        GLES20.glCullFace(GLES20.GL_BACK);
+        mCuboidBuilding.draw(projectionMatrix, decX, decY, decZ);
+        mCuboidFloor.draw(projectionMatrix, decX, decY, decZ);
+        mCuboidDoor.draw(projectionMatrix, decX, decY, decZ);
+        GLES20.glCullFace(GLES20.GL_FRONT);
     }
 }

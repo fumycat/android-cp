@@ -9,6 +9,7 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.stream.Stream;
 
 public class CuboidTexturesWIP extends Cuboid {
 
@@ -170,7 +171,7 @@ public class CuboidTexturesWIP extends Cuboid {
                     1.0f, 0.0f
             };
 
-    final float[] cubeColorData =
+    float[] cubeColorData =
             {
                     // Front face (red)
                     1.0f, 0.0f, 0.0f, 1.0f,
@@ -308,9 +309,12 @@ public class CuboidTexturesWIP extends Cuboid {
     public CuboidTexturesWIP(Context context,
                              float centerX, float centerY, float centerZ,
                              float dimX, float dimY, float dimZ,
-                             int texture) {
+                             int texture, float[] colorArray) {
         super(centerX, centerY, centerZ, dimX, dimY, dimZ);
         textureDataHandle = texture;
+
+        cubeColorData = colorArray;
+
 
         scaleMove();
         setupVertexBufferT();
