@@ -185,7 +185,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mLamp0 = new GLCircleCarriage(context,3f, 5,6f, 0.3f, color, 0, white_ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
         mLamp1 = new GLCircleCarriage(context,-3f, 5,6f, 0.3f, color, 0, white_ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
 
-        carriage = new Carriage(context, 0, 5, -5, mTextureDataHandleMetal);
+        carriage = new Carriage(context, 5, 5, -5, mTextureDataHandleMetal);
     }
 
     @Override
@@ -227,14 +227,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         //mCuboid.draw(mvpMatrix);
 
-        carriage.draw(mvpMatrix);
-
         GLES20.glCullFace(GLES20.GL_BACK);
         mCuboidBuilding.draw(projectionMatrix, decX, decY, decZ);
         mCuboidFloor.draw(projectionMatrix, decX, decY, decZ);
         mCuboidDoor.draw(projectionMatrix, decX, decY, decZ);
         mCuboidClock.draw(projectionMatrix, decX, decY, decZ);
         mBaseFloor.draw(projectionMatrix, decX, decY, decZ);
+        carriage.draw(mvpMatrix, projectionMatrix, decX, decY, decZ, 0f, 1f, 0f, 90f);
         GLES20.glCullFace(GLES20.GL_FRONT);
 
         Matrix.setIdentityM(poleRotateMatrix, 0);
@@ -242,6 +241,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(poleMVPMatrix, 0, mvpMatrix, 0, poleRotateMatrix, 0);
         mPool0.draw(poleMVPMatrix);
         mPool1.draw(poleMVPMatrix);
+
 
         mLamp0.draw(mvpMatrix);
         mLamp1.draw(mvpMatrix);

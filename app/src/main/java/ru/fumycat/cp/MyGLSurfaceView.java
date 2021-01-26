@@ -74,9 +74,9 @@ public class MyGLSurfaceView extends GLSurfaceView {
         public boolean onScale(ScaleGestureDetector detector) {
 
             if (detector.getScaleFactor() > 1.) {
-                mRenderer.setRadius(mRenderer.getRadius() + 0.2f);
+                mRenderer.setRadius(mRenderer.getRadius() + 0.5f);
             } else {
-                mRenderer.setRadius(mRenderer.getRadius() - 0.2f);
+                mRenderer.setRadius(mRenderer.getRadius() - 0.5f);
             }
 
             requestRender();
