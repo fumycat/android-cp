@@ -19,6 +19,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private CuboidTexturesWIP mCuboidBuilding;
     private CuboidTexturesWIP mCuboidFloor;
     private CuboidTexturesWIP mCuboidDoor;
+    private CuboidTexturesWIP mCuboidClock;
+    private CuboidTexturesWIP mBaseFloor;
+
+    private GLCylinder mPool0;
+    private GLCylinder mPool1;
 
     private float[] mvMatrix = new float[16];
     private float[] mModelMatrix = new float[16];
@@ -26,6 +31,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private float[] mvpMatrix = new float[16];
     private float[] projectionMatrix = new float[16];
     private float[] viewMatrix = new float[16];
+
+    private float[] poleRotateMatrix = new float[16];
+    private float[] poleMVPMatrix = new float[16];
 
     private final float[] rotationMatrix = new float[16];
 
@@ -121,6 +129,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             }
         }
 
+        float[] cubeDarkColorData = new float[36 * 4];
+        for (int i = 0; i < 36 * 4; i++) {
+            if (i % 4 == 2) {
+                cubeDarkColorData[i] = 0.4f;
+            } else {
+                cubeDarkColorData[i] = 0.4f;
+            }
+        }
+
         mBuilding = new Building();
         mCarriageBack = new GLCircleCarriage(context, 0, 0,-3.9f, 1);
         mCarriageFront = new GLCircleCarriage(context,0, 0,3.9f, 1, ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
@@ -138,6 +155,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 0f, 3f, 9.9f,
                 3f, 4f, 0.1f,
                 mTextureDataHandleDoor, cubeColorData);
+        mCuboidClock = new CuboidTexturesWIP(context,
+                0f, 7f, 9.9f,
+                4f, 2f, 0.1f,
+                mTextureDataHandlerClock, cubeColorData);
+        mBaseFloor = new CuboidTexturesWIP(context,
+                0f, 0f, 0f,
+                64f, 0.1f, 64f,
+                mTextureDataHandleConcrete, cubeDarkColorData);
+
+        mPool0 = new GLCylinder(context, 3f, 3f,-2.5f, 0.05f,5f, mTextureDataHandleMetal);
+        mPool1 = new GLCylinder(context, -3f, 3f,-2.5f, 0.05f,5f, mTextureDataHandleMetal);
     }
 
     @Override
@@ -176,12 +204,20 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //mCarriageFront.draw(mvpMatrix);
         mCylinder.draw(mvpMatrix);
 
-        mCuboid.draw(mvpMatrix);
+        // mCuboid.draw(mvpMatrix);
 
         GLES20.glCullFace(GLES20.GL_BACK);
         mCuboidBuilding.draw(projectionMatrix, decX, decY, decZ);
         mCuboidFloor.draw(projectionMatrix, decX, decY, decZ);
         mCuboidDoor.draw(projectionMatrix, decX, decY, decZ);
+        mCuboidClock.draw(projectionMatrix, decX, decY, decZ);
+        mBaseFloor.draw(projectionMatrix, decX, decY, decZ);
         GLES20.glCullFace(GLES20.GL_FRONT);
+
+        Matrix.setIdentityM(poleRotateMatrix, 0);
+        Matrix.rotateM(poleRotateMatrix, 0, 90f, 1.0f, 0.0f, 0.0f);
+        Matrix.multiplyMM(poleMVPMatrix, 0, mvpMatrix, 0, poleRotateMatrix, 0);
+        mPool0.draw(poleMVPMatrix);
+        mPool1.draw(poleMVPMatrix);
     }
 }
