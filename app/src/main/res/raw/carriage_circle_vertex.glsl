@@ -13,5 +13,5 @@ void main()
 
     // gl_Position is a special variable used to store the final position.
     // Multiply the vertex by the matrix to get the final point in normalized screen coordinates.
-    gl_Position = u_MVPMatrix * vec4(a_Position.x, a_Position.y, a_Position.z *0.6, a_Position.w);
+    gl_Position = u_MVPMatrix * vec4(a_Position.x, a_Position.y, a_Position.z *0.5, a_Position.w);
 }

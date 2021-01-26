@@ -179,11 +179,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 64f, 0.1f, 64f,
                 mTextureDataHandleConcrete, cubeDarkColorData);
 
-        mPool0 = new GLCylinder(context, 3f, 3f,-2.5f, 0.05f,5f, mTextureDataHandleMetal);
-        mPool1 = new GLCylinder(context, -3f, 3f,-2.5f, 0.05f,5f, mTextureDataHandleMetal);
+        mPool0 = new GLCylinder(context, 3f, 3f,-2.5f, 0.05f,5f, color, mTextureDataHandleMetal);
+        mPool1 = new GLCylinder(context, -3f, 3f,-2.5f, 0.05f,5f, color, mTextureDataHandleMetal);
 
-        mLamp0 = new GLCircleCarriage(context,3f, 5,6f, 0.3f, white_ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
-        mLamp1 = new GLCircleCarriage(context,-3f, 5,6f, 0.3f, white_ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
+        mLamp0 = new GLCircleCarriage(context,3f, 5,6f, 0.3f, color, 0, white_ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
+        mLamp1 = new GLCircleCarriage(context,-3f, 5,6f, 0.3f, color, 0, white_ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
 
         carriage = new Carriage(context, 0, 5, -5, mTextureDataHandleMetal);
     }
