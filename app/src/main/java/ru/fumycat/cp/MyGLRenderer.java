@@ -34,6 +34,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public volatile float radius = -9;
 
     private int mTextureDataHandleBrick;
+    private int mTextureDataHandleMetal;
 
     public MyGLRenderer(Context context) {
         this.context = context;
@@ -87,6 +88,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glCullFace(GLES20.GL_FRONT);
 
         mTextureDataHandleBrick = Utils.loadTexture(context, R.drawable.stone_wall_public_domain);
+        mTextureDataHandleMetal = Utils.loadTexture(context, R.drawable.rasty_metal);
 
         GLCircleCarriage.DrawCtrl ctrl = new GLCircleCarriage.DrawCtrl(){
             @Override
@@ -102,9 +104,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         };
 
         mBuilding = new Building();
-        mCarriageBack = new GLCircleCarriage(context, 0, 0,-3.9f, 2);
-        mCarriageFront = new GLCircleCarriage(context,0, 0,3.9f, 2, ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
-        mCylinder = new GLCylinder(context, 0, 0,0, 2,4f);
+        mCarriageBack = new GLCircleCarriage(context, 0, 0,-3.9f, 1);
+        mCarriageFront = new GLCircleCarriage(context,0, 0,3.9f, 1, ctrl, null, Utils.readStringFromResource(context, R.raw.basic_fragment));
+        mCylinder = new GLCylinder(context, 0, 0,0, 0.5f,1f, mTextureDataHandleMetal);
         mCuboid = new Cuboid(context, 1.5f, 0, 0, 2, 1,2);
         mCuboidTextured = new CuboidTexturesWIP(context,
                 -3f, 0f, 0f,
@@ -144,14 +146,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         // draw
         // mBuilding.draw(finalMatrixCube);
-        mCarriageBack.draw(mvpMatrix);
-        mCarriageFront.draw(mvpMatrix);
+        //mCarriageBack.draw(mvpMatrix);
+        //mCarriageFront.draw(mvpMatrix);
         mCylinder.draw(mvpMatrix);
 
         mCuboid.draw(mvpMatrix);
 
-        GLES20.glCullFace(GLES20.GL_BACK);
-        mCuboidTextured.draw(projectionMatrix, decX, decY, decZ);
-        GLES20.glCullFace(GLES20.GL_FRONT);
+        //GLES20.glCullFace(GLES20.GL_BACK);
+        //mCuboidTextured.draw(projectionMatrix, decX, decY, decZ);
+        //GLES20.glCullFace(GLES20.GL_FRONT);
     }
 }

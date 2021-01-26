@@ -12,25 +12,27 @@ import java.nio.FloatBuffer;
 import android.opengl.Matrix;
 
 public class GLCylinder {
-    private float radius = 1.0f; // the radius of the ball
-    final double angleSpan = Math.PI / 90f; // The angle at which the ball is divided into units
-    private FloatBuffer mVertexBuffer;// Vertex coordinates
-    int mVertexCount = 0;// The number of vertices, first initialized to 0
-
     // Number of bytes of float type
     private static final int BYTES_PER_FLOAT = 4;
-
     // The number of coordinates of each vertex in the array
     private static final int COORDS_PER_VERTEX = 3;
+    private static final int COORDS_PER_TEXTURE = 2;
+
+    private final float radius; // the radius of the ball
+    private final double angleSpan = Math.PI / 90f; // The angle at which the ball is divided into units
+    private final int textureDataHandle;
+
+    private FloatBuffer mVertexBuffer;// Vertex coordinates
+    private FloatBuffer mTextureBuffer;
+    int mVertexCount = 0;// The number of vertices, first initialized to 0
+    int mTextureCount = 0;
 
     private int mProgramHandle;
     private int maPositionHandle;
     private int muColorHandle;
     private int muMatrixHandle;
-
-    public int getHandle(){
-        return mProgramHandle;
-    }
+    private int mTextureUniformHandle;
+    private int mTextureCoordinateHandle = 0;
 
     DrawCtrl ctrl;
 
@@ -43,14 +45,14 @@ public class GLCylinder {
             VERTEX_SHADER = vertex_sh;
         }
         else {
-            VERTEX_SHADER = Utils.readStringFromResource(context, R.raw.basic_vertex);
+            VERTEX_SHADER = Utils.readStringFromResource(context, R.raw.cylinder_basic_vertex);
         }
 
         if (fragment_sh != null) {
             FRAGMENT_SHADER = fragment_sh;
         }
         else {
-            FRAGMENT_SHADER = Utils.readStringFromResource(context, R.raw.basic_fragment);
+            FRAGMENT_SHADER = Utils.readStringFromResource(context, R.raw.cylinder_basic_fragment);
         }
 
         int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, VERTEX_SHADER);
@@ -63,10 +65,14 @@ public class GLCylinder {
 
         GLES20.glLinkProgram(mProgramHandle);
 
-        if (vertex_sh == null) {
-            muMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
-            maPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Position");
-        }
+        muMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
+        maPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Position");
+
+        mTextureUniformHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Texture");
+        mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_TexCoordinate");
+
+        //if (vertex_sh == null) {
+        //}
 
         if (fragment_sh == null) {
             muColorHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Color");
@@ -79,18 +85,23 @@ public class GLCylinder {
         void shaders_free();
     }
 
-    public GLCylinder(Context context, float x, float y, float z, float radius, float length,
+    public GLCylinder(Context context, float x, float y, float z, float radius, float length, int texture,
                       DrawCtrl ctrl, String VERTEX_SHADER, String FRAGMENT_SHADER) {
+        this.textureDataHandle = texture;
         this.radius = radius;
-
-        this.ctrl = ctrl;
 
         initCylinderVertex(x, y, z, length);
         createProgram(context, VERTEX_SHADER, FRAGMENT_SHADER);
+
+        this.ctrl = ctrl;
     }
 
-    public GLCylinder(Context context, float x, float y, float z, float radius, float length) {
+    public GLCylinder(Context context, float x, float y, float z, float radius, float length, int texture) {
+        this.textureDataHandle = texture;
         this.radius = radius;
+
+        initCylinderVertex(x, y, z, length);
+        createProgram(context, null, null);
 
         ctrl = new DrawCtrl(){
             @Override
@@ -103,13 +114,11 @@ public class GLCylinder {
             {
             }
         };
-
-        initCylinderVertex(x, y, z, length);
-        createProgram(context, null, null);
     }
 
     public void initCylinderVertex(float x, float y, float z, float length) {
-        ArrayList<Float> vertex = new ArrayList<Float>();
+        ArrayList <Float> vertex = new ArrayList<Float>();
+        ArrayList <Float> texture = new ArrayList<Float>();
 
         for (double hAngle = 0; hAngle < 2 * Math.PI; hAngle = hAngle + angleSpan) {
             float div_len = (float) length / 2;
@@ -135,60 +144,60 @@ public class GLCylinder {
 
             //vertical "caps"
             //1
-            vertex.add(x);
-            vertex.add(y);
+            vertex.add(x); texture.add(0f);
+            vertex.add(y); texture.add(0f);
             vertex.add(zc1);
 
-            vertex.add(x0);
-            vertex.add(y0);
+            vertex.add(x0); texture.add(0f);
+            vertex.add(y0); texture.add(0f);
             vertex.add(z0);
 
-            vertex.add(x1);
-            vertex.add(y1);
+            vertex.add(x1); texture.add(0f);
+            vertex.add(y1); texture.add(0f);
             vertex.add(z1);
 
             //2
-            vertex.add(x);
-            vertex.add(y);
+            vertex.add(x); texture.add(0f);
+            vertex.add(y); texture.add(0f);
             vertex.add(zc2);
 
-            vertex.add(x2);
-            vertex.add(y2);
+            vertex.add(x2); texture.add(0f);
+            vertex.add(y2); texture.add(0f);
             vertex.add(z2);
 
-            vertex.add(x3);
-            vertex.add(y3);
+            vertex.add(x3); texture.add(0f);
+            vertex.add(y3); texture.add(0f);
             vertex.add(z3);
 
             //horizontal
             //1
-            vertex.add(x0);
-            vertex.add(y0);
+            vertex.add(x0); texture.add(0f);
+            vertex.add(y0); texture.add((float)(hAngle/(float)(Math.PI*2)));
             vertex.add(z0);
 
-            vertex.add(x3);
-            vertex.add(y3);
+            vertex.add(x3); texture.add(1f);
+            vertex.add(y3); texture.add((float) (hAngle/(float)(Math.PI*2)));
             vertex.add(z3);
 
-            vertex.add(x2);
-            vertex.add(y2);
+            vertex.add(x2); texture.add(1f);
+            vertex.add(y2); texture.add((float)(hAngle + angleSpan)/(float)(Math.PI*2));
             vertex.add(z2);
 
             //2
-            vertex.add(x0);
-            vertex.add(y0);
+            vertex.add(x0); texture.add(0f);
+            vertex.add(y0); texture.add((float)(hAngle/(float)(Math.PI*2)));
             vertex.add(z0);
 
-            vertex.add(x2);
-            vertex.add(y2);
+            vertex.add(x2); texture.add(1f);
+            vertex.add(y2); texture.add((float)(hAngle + angleSpan)/(float)(Math.PI*2));
             vertex.add(z2);
 
-            vertex.add(x1);
-            vertex.add(y1);
+            vertex.add(x1); texture.add(0f);
+            vertex.add(y1); texture.add((float)(hAngle + angleSpan)/(float)(Math.PI*2));
             vertex.add(z1);
         }
 
-
+        //vertexes
         mVertexCount = vertex.size() / COORDS_PER_VERTEX;
         float vertices[] = new float[vertex.size()];
         for (int i = 0; i < vertex.size(); i++) {
@@ -199,13 +208,22 @@ public class GLCylinder {
                 vertices.length * BYTES_PER_FLOAT);
         // use the device hardware's native byte order
         bb.order(ByteOrder.nativeOrder());
-
         // create a floating point buffer from the ByteBuffer
         mVertexBuffer = bb.asFloatBuffer();
         // add the coordinates to the FloatBuffer
         mVertexBuffer.put(vertices);
         // set the buffer to read the first coordinate
         mVertexBuffer.position(0);
+
+        //textures
+        mTextureCount = texture.size() / COORDS_PER_TEXTURE;
+        float vtextures[] = new float[texture.size()];
+        for (int i = 0; i < texture.size(); i++) {
+            vtextures[i] = texture.get(i);
+        }
+        mTextureBuffer = ByteBuffer.allocateDirect(vtextures.length * BYTES_PER_FLOAT)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mTextureBuffer.put(vtextures).position(0);
     }
 
     public void draw(float[] mvpMatrix) {
@@ -214,6 +232,12 @@ public class GLCylinder {
                 GLES20.GL_FLOAT, false, 0, mVertexBuffer);
         GLES20.glEnableVertexAttribArray(maPositionHandle);
         GLES20.glUniformMatrix4fv(muMatrixHandle, 1, false, mvpMatrix, 0);
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDataHandle);
+        GLES20.glUniform1i(mTextureUniformHandle, 0);
+        GLES20.glVertexAttribPointer(mTextureCoordinateHandle, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
+        GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
         ctrl.shaders_init();
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, mVertexCount);
